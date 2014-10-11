@@ -3,8 +3,18 @@ import bs4
 import requests
 
 
-API_ROOT = "https://store.steampowered.com"
+API_ROOT = "https://api.steampowered.com"
+STORE_API_ROOT = "https://store.steampowered.com"
+
 CURATORS_RECOMMENDATIONS_PATH = "/curators/ajaxgetcuratorrecommendations/%(id)i/"
+APP_LIST_PATH = "/ISteamApps/GetAppList/v2"
+
+
+def get_apps():
+	path = API_ROOT + APP_LIST_PATH
+	r = requests.get(path)
+	data = r.json()
+	return data["applist"]["apps"]
 
 
 def get_recommendations(id):
@@ -14,7 +24,7 @@ def get_recommendations(id):
 	}
 	html = []
 	while True:
-		path = API_ROOT + CURATORS_RECOMMENDATIONS_PATH % {"id": id}
+		path = STORE_API_ROOT + CURATORS_RECOMMENDATIONS_PATH % {"id": id}
 		print("Querying path", path)
 		r = requests.get(path, params=params)
 		data = r.json()
@@ -55,4 +65,6 @@ def get_recommendations(id):
 
 	return j_recommendations
 
+
+# print(get_apps())
 # print(get_recommendations(1370293))
