@@ -1,7 +1,11 @@
 #!/usr/bin/env python
 import bs4
 import requests
+import requests_cache
 
+
+# Cache all requests
+requests_cache.install_cache()
 
 API_ROOT = "https://api.steampowered.com"
 STORE_API_ROOT = "https://store.steampowered.com"
