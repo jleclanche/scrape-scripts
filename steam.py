@@ -12,6 +12,7 @@ STORE_API_ROOT = "https://store.steampowered.com"
 
 CURATORS_RECOMMENDATIONS_PATH = "/curators/ajaxgetcuratorrecommendations/%(id)i/"
 APP_LIST_PATH = "/ISteamApps/GetAppList/v2"
+APP_DETAILS_PATH = "/api/appdetails/"
 
 
 def get_apps():
@@ -19,6 +20,14 @@ def get_apps():
 	r = requests.get(path)
 	data = r.json()
 	return data["applist"]["apps"]
+
+
+def get_app_details(*appids):
+	path = STORE_API_ROOT + APP_DETAILS_PATH
+	params = {"appids": ",".join(appids)}
+	r = requests.get(path)
+	data = r.json()
+	return data
 
 
 def get_recommendations(id):
