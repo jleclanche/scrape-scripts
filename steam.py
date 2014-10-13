@@ -10,6 +10,7 @@ requests_cache.install_cache()
 API_ROOT = "https://api.steampowered.com"
 STORE_API_ROOT = "https://store.steampowered.com"
 
+CURATORS_PATH = "/curators/ajaxgetcurators/render/"
 CURATORS_RECOMMENDATIONS_PATH = "/curators/ajaxgetcuratorrecommendations/%(id)i/"
 APP_LIST_PATH = "/ISteamApps/GetAppList/v2"
 APP_DETAILS_PATH = "/api/appdetails/"
@@ -78,6 +79,55 @@ def get_recommendations(id):
 
 	return j_recommendations
 
+
+def get_curators():
+	MAX_CURATORS_PER_PAGE = 50
+	start = 0
+	ret = {}
+	while True:
+		data, total_count = _get_curators(start, MAX_CURATORS_PER_PAGE)
+		ret.update(data)
+		start += MAX_CURATORS_PER_PAGE
+		if start > total_count:
+			break
+	return ret
+
+
+def _get_curators(start, count):
+	ret = {}
+	params = {
+		# "query": "",
+		"start": start,
+		"count": count,
+		#"filter": "all",
+	}
+	path = STORE_API_ROOT + CURATORS_PATH
+	print("Querying", path, params)
+	r = requests.get(path, params=params)
+	data = r.json()
+	soup = bs4.BeautifulSoup(data["results_html"])
+	curators = soup.select(".steam_curator_row_ctn")
+	for curator in curators:
+		id = int(curator.a["data-clanid"])
+		href = curator.a["href"].strip()
+		desc = curator.select(".steam_curator_desc")
+		if not href:
+			# bad data
+			continue
+		ret[id] = {
+			"href": href,
+			"num_followers": int(curator.select(".num_followers")[0].text.replace(",", "")),
+			"name": curator.select(".steam_curator_name")[0].text,
+			"desc": desc and desc[0].text.strip(),
+			"avatar": curator.select("img.steam_curator_avatar")[0]["src"],
+		}
+
+	return ret, data["total_count"]
+
+
+if __name__ == "__main__":
+	for curator in get_curators():
+		print(get_recommendations(curator))
 
 # print(get_apps())
 # print(get_recommendations(1370293))
