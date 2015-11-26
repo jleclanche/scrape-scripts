@@ -4,6 +4,4 @@ for sitemap in ssmp.SiteMapIndex("http://www.metacritic.com/siteindex.xml").get_
 
 urls=$(python -c "$command")
 
-for url in $urls; do
-	wget --user-agent="BulletBot/0.1" $url
-done
+wget --user-agent="BulletBot/0.1" -x -nH $urls
