@@ -25,7 +25,7 @@ def get_apps():
 
 def get_app_details(*appids):
 	path = STORE_API_ROOT + APP_DETAILS_PATH
-	params = {"appids": ",".join(appids)}
+	# params = {"appids": ",".join(appids)}
 	r = requests.get(path)
 	data = r.json()
 	return data
@@ -48,7 +48,7 @@ def get_recommendations(id):
 			break
 
 	html = "".join(html)
-	soup = bs4.BeautifulSoup(html)
+	soup = bs4.BeautifulSoup(html, "html.parser")
 	recommendations = soup.select(".recommendation")
 	j_recommendations = []
 	for rec in recommendations:
@@ -99,7 +99,7 @@ def _get_curators(start, count):
 		# "query": "",
 		"start": start,
 		"count": count,
-		#"filter": "all",
+		# "filter": "all",
 	}
 	path = STORE_API_ROOT + CURATORS_PATH
 	print("Querying", path, params)
