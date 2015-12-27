@@ -1,0 +1,17 @@
+#!/bin/bash
+
+BASEDIR="$(dirname $0)"
+SITEMAP="$BASEDIR/profiles-sitemap.xml"
+DATA="$BASEDIR/sitemaps.gz"
+
+if [[ ! -e "$SITEMAP" ]]; then
+	wget http://www.gstatic.com/s2/sitemaps/profiles-sitemap.xml -O "$SITEMAP"
+fi
+
+for url in $(grep "<loc>http" "$SITEMAP" | sed 's/.*<loc>\(http.*\)<\/loc>/\1/g'); do
+	echo "Downloading $url"
+	curl -s $url >> sitemaps.gz
+done
+
+echo "Done. Uncompressing $DATA"
+gunzip "$DATA"
