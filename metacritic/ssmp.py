@@ -1,5 +1,7 @@
 """
 The simple sitemap parser
+
+This file is distributed under the terms of the MIT license.
 """
 import lxml.etree
 import requests
